@@ -216,8 +216,7 @@ const BatchVerify = () => {
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <Shield className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
-              <Sparkles className="h-4 w-4 text-accent absolute -top-1 -right-1 animate-pulse" />
+              <img src="/AGROTRACELOGO.png" className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               AgroTrace
@@ -242,7 +241,7 @@ const BatchVerify = () => {
         {/* Hero Section */}
         <div ref={heroRef} className="mb-12 text-center space-y-4">
           <div className="inline-block">
-            <Badge className="px-6 py-2 text-sm font-semibold bg-gradient-to-r from-accent/20 to-primary/20 text-primary border-primary/30">
+            <Badge className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-accent/20 to-primary/20 border-primary/30">
               ✨ Batch Verification Portal
             </Badge>
           </div>
@@ -279,8 +278,8 @@ const BatchVerify = () => {
                 />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-lg font-semibold text-foreground flex items-center gap-2">
+              <div className="space-y-4">
+                <label className="text-lg font-semibold text-foreground flex items-center gap-6">
                   <Upload className="h-5 w-5 text-secondary" />
                   Or upload a file (.txt, .csv)
                 </label>
@@ -288,7 +287,7 @@ const BatchVerify = () => {
                   type="file"
                   accept=".txt,.csv"
                   onChange={handleFileUpload}
-                  className="cursor-pointer border-2 hover:border-secondary transition-all file:bg-secondary file:text-secondary-foreground file:font-semibold file:px-4 file:py-2 file:rounded-md file:border-0 file:mr-4"
+                  className="cursor-pointer border-2 hover:border-secondary transition-all file:bg-secondary file:text-secondary-foreground file:font-semibold file:px-4 file:rounded-md file:border-0 file:mr-4"
                 />
               </div>
 

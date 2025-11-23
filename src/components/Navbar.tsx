@@ -16,7 +16,7 @@ const Navbar = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
               <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
-                <Sparkles className="h-7 w-7 text-primary-foreground" />
+                <img src="/AGROTRACELOGO.png"/>
               </div>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">

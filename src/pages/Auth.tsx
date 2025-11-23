@@ -110,7 +110,7 @@ const Auth = () => {
         <div ref={logoRef} className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] shadow-lg shadow-[#10b981]/20 group-hover:shadow-[#10b981]/40 transition-all duration-300 group-hover:scale-110">
-              <Leaf className="h-8 w-8 text-white" />
+              <img src="/AGROTRACELOGO.png"/>
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               AgroTrace

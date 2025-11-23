@@ -113,7 +113,7 @@ const PublicVerify = () => {
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <Shield className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+            <img src="/AGROTRACELOGO.png" className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
               <Sparkles className="h-4 w-4 text-accent absolute -top-1 -right-1 animate-pulse" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
