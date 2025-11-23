@@ -8,22 +8,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import QRScanner from "@/components/QRScanner";
 import { 
   QrCode, 
-  Hash, 
-  Zap, 
+  Keyboard,
+  Camera, 
   Shield, 
   CheckCircle,
   Home,
   History,
-  Info
+  Package
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
 
 interface ScanHistoryItem {
   token: string;
-  type: "qr" | "token";
-  timestamp: number;
-  productType?: string;
+  type: string;
+  timestamp: string;
 }
 
 const MobileScanner = () => {
@@ -33,69 +33,72 @@ const MobileScanner = () => {
   const [scanHistory, setScanHistory] = useState<ScanHistoryItem[]>([]);
 
   useEffect(() => {
-    // Load scan history from localStorage
-    const saved = localStorage.getItem("scan-history");
+    const saved = localStorage.getItem('scanHistory');
     if (saved) {
-      try {
-        setScanHistory(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse scan history", e);
-      }
+      setScanHistory(JSON.parse(saved));
     }
   }, []);
 
-  const saveScanHistory = (item: ScanHistoryItem) => {
-    const updated = [item, ...scanHistory.slice(0, 9)]; // Keep last 10
+  const saveScanHistory = (token: string, type: string) => {
+    const newScan: ScanHistoryItem = {
+      token,
+      type,
+      timestamp: new Date().toLocaleString()
+    };
+    const updated = [newScan, ...scanHistory].slice(0, 10);
     setScanHistory(updated);
-    localStorage.setItem("scan-history", JSON.stringify(updated));
+    localStorage.setItem('scanHistory', JSON.stringify(updated));
   };
 
-  const handleQRScan = async (token: string) => {
+  const handleQRScan = async (scannedToken: string) => {
+    setIsScanning(true);
+    
     try {
-      setIsScanning(true);
-
-      // Check if it's a VC QR token or batch tracking token
-      if (token.startsWith("TRK-")) {
-        // Batch tracking token
-        const { data: batch } = await supabase
-          .from("batches")
-          .select("product_type")
-          .eq("tracking_token", token)
-          .single();
-
-        saveScanHistory({
-          token,
-          type: "qr",
-          timestamp: Date.now(),
-          productType: batch?.product_type
-        });
-
-        navigate(`/track/${token}`);
-      } else {
-        // VC QR token
-        const { data: vc } = await supabase
-          .from("verifiable_credentials")
-          .select(`
-            *,
-            batch:batch_id (product_type)
-          `)
-          .eq("qr_token", token)
-          .single();
-
-        saveScanHistory({
-          token,
-          type: "qr",
-          timestamp: Date.now(),
-          productType: vc?.batch?.product_type
-        });
-
-        navigate(`/batch-verify?token=${token}`);
+      let token = scannedToken;
+      
+      // Extract token from full URL if needed
+      if (scannedToken.includes('/track/')) {
+        const matches = scannedToken.match(/\/track\/([^?]+)/);
+        if (matches && matches[1]) {
+          token = matches[1];
+          navigate(`/track/${token}`);
+          saveScanHistory(token, 'Batch Tracking');
+          setIsScanning(false);
+          return;
+        }
+      }
+      
+      if (scannedToken.includes('token=')) {
+        const url = new URL(scannedToken);
+        token = url.searchParams.get('token') || scannedToken;
       }
 
-      toast.success("QR code scanned successfully!");
+      // Check if it's a batch tracking token (starts with TRK-)
+      if (token.startsWith('TRK-')) {
+        navigate(`/track/${token}`);
+        saveScanHistory(token, 'Batch Tracking');
+        setIsScanning(false);
+        return;
+      }
+
+      // Verify certificate token exists in the database
+      const { data: credential, error } = await supabase
+        .from("verifiable_credentials")
+        .select("qr_token")
+        .eq("qr_token", token)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (credential) {
+        navigate(`/verify?token=${token}`);
+        saveScanHistory(token, 'Certificate');
+      } else {
+        toast.error("Invalid QR code");
+      }
     } catch (error) {
       console.error("Scan error:", error);
-      toast.error("Failed to verify QR code. Please try again.");
+      toast.error("Failed to process QR code");
     } finally {
       setIsScanning(false);
     }
@@ -107,269 +110,185 @@ const MobileScanner = () => {
       return;
     }
 
-    saveScanHistory({
-      token: manualToken,
-      type: "token",
-      timestamp: Date.now()
-    });
-
-    if (manualToken.startsWith("TRK-")) {
+    if (manualToken.startsWith('TRK-')) {
       navigate(`/track/${manualToken}`);
+      saveScanHistory(manualToken, 'Batch Tracking');
     } else {
-      navigate(`/batch-verify?token=${manualToken}`);
-    }
-  };
-
-  const handleHistoryClick = (item: ScanHistoryItem) => {
-    if (item.token.startsWith("TRK-")) {
-      navigate(`/track/${item.token}`);
-    } else {
-      navigate(`/batch-verify?token=${item.token}`);
+      navigate(`/verify?token=${manualToken}`);
+      saveScanHistory(manualToken, 'Certificate');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-background to-background pb-safe">
-      {/* Header */}
-      <div className="bg-primary text-primary-foreground shadow-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary-foreground/10 p-2 rounded-lg">
-                <QrCode className="h-6 w-6" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">AgroTrace Scanner</h1>
-                <p className="text-xs opacity-90">Product Verification</p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/")}
-              className="text-primary-foreground hover:bg-primary-foreground/10"
-            >
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/10 pb-safe">
+      {/* Header - Mobile optimized */}
+      <div className="bg-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50 safe-top">
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            AgriQCert Scanner
+          </h1>
+          <Link to="/">
+            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">
               <Home className="h-5 w-5" />
             </Button>
-          </div>
+          </Link>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 max-w-2xl space-y-6">
-        {/* Quick Features */}
-        <div className="grid grid-cols-3 gap-3">
-          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0">
-            <CardContent className="p-4 text-center">
-              <Zap className="h-6 w-6 mx-auto mb-2" />
-              <p className="text-xs font-medium">Instant Scan</p>
-            </CardContent>
+      {/* Main Content - Mobile optimized */}
+      <div className="container mx-auto px-4 py-4 sm:py-6 max-w-2xl">
+        {/* Quick Features - Touch optimized */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <Card className="text-center p-3 sm:p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 active:scale-95 transition-transform">
+            <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+              <div className="p-2 sm:p-3 rounded-full bg-primary/20">
+                <Camera className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              </div>
+              <p className="text-xs sm:text-sm font-semibold">Instant Scan</p>
+            </div>
           </Card>
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0">
-            <CardContent className="p-4 text-center">
-              <Shield className="h-6 w-6 mx-auto mb-2" />
-              <p className="text-xs font-medium">Verified</p>
-            </CardContent>
+          
+          <Card className="text-center p-3 sm:p-4 bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20 active:scale-95 transition-transform">
+            <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+              <div className="p-2 sm:p-3 rounded-full bg-secondary/20">
+                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-secondary" />
+              </div>
+              <p className="text-xs sm:text-sm font-semibold">Verified</p>
+            </div>
           </Card>
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0">
-            <CardContent className="p-4 text-center">
-              <CheckCircle className="h-6 w-6 mx-auto mb-2" />
-              <p className="text-xs font-medium">Authentic</p>
-            </CardContent>
+          
+          <Card className="text-center p-3 sm:p-4 bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20 active:scale-95 transition-transform">
+            <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+              <div className="p-2 sm:p-3 rounded-full bg-accent/20">
+                <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-accent" />
+              </div>
+              <p className="text-xs sm:text-sm font-semibold">Authentic</p>
+            </div>
           </Card>
         </div>
 
-        {/* Scanner Tabs */}
-        <Tabs defaultValue="scan" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="scan" className="text-xs">
-              <QrCode className="h-4 w-4 mr-1" />
-              Scan
-            </TabsTrigger>
-            <TabsTrigger value="manual" className="text-xs">
-              <Hash className="h-4 w-4 mr-1" />
-              Manual
-            </TabsTrigger>
-            <TabsTrigger value="history" className="text-xs">
-              <History className="h-4 w-4 mr-1" />
-              History
-            </TabsTrigger>
-          </TabsList>
+        {/* Tabs - Mobile optimized */}
+        <Card className="border-2 shadow-xl">
+          <CardContent className="p-4 sm:p-6">
+            <Tabs defaultValue="scan" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto">
+                <TabsTrigger value="scan" className="text-xs sm:text-sm font-semibold py-2.5 sm:py-2 min-h-[44px]">
+                  <QrCode className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">Scan</span>
+                </TabsTrigger>
+                <TabsTrigger value="manual" className="text-xs sm:text-sm font-semibold py-2.5 sm:py-2 min-h-[44px]">
+                  <Keyboard className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">Manual</span>
+                </TabsTrigger>
+                <TabsTrigger value="history" className="text-xs sm:text-sm font-semibold py-2.5 sm:py-2 min-h-[44px]">
+                  <History className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden xs:inline">History</span>
+                </TabsTrigger>
+              </TabsList>
 
-          {/* QR Scanner Tab */}
-          <TabsContent value="scan" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
+              <TabsContent value="scan" className="mt-0">
+                <QRScanner onScan={handleQRScan} />
+              </TabsContent>
+
+              <TabsContent value="manual" className="mt-0">
                 <div className="space-y-4">
-                  <div className="text-center">
-                    <QrCode className="h-12 w-12 mx-auto mb-3 text-primary" />
-                    <h3 className="font-semibold text-lg">Scan QR Code</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Point your camera at the QR code on the product
-                    </p>
-                  </div>
-
-                  <div className="rounded-lg overflow-hidden border-2 border-primary/20">
-                    <QRScanner 
-                      onScan={handleQRScan}
+                  <div>
+                    <Label htmlFor="token" className="text-sm sm:text-base font-semibold mb-2 block">
+                      Enter Token
+                    </Label>
+                    <Input
+                      id="token"
+                      placeholder="e.g., TRK-ABC123 or VC-XYZ789"
+                      value={manualToken}
+                      onChange={(e) => setManualToken(e.target.value)}
+                      className="text-base sm:text-lg min-h-[44px]"
                     />
                   </div>
-
-                  {isScanning && (
-                    <div className="text-center">
-                      <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                        Verifying...
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                    <div className="flex items-start gap-2">
-                      <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                      <div className="text-xs text-muted-foreground space-y-1">
-                        <p>• Ensure good lighting</p>
-                        <p>• Hold steady and center the QR code</p>
-                        <p>• Works with batch tracking and VC QR codes</p>
-                      </div>
-                    </div>
-                  </div>
+                  <Button 
+                    onClick={handleManualVerify}
+                    className="w-full min-h-[48px]"
+                    size="lg"
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Verify Token
+                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </TabsContent>
 
-          {/* Manual Entry Tab */}
-          <TabsContent value="manual" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <Hash className="h-12 w-12 mx-auto mb-3 text-primary" />
-                    <h3 className="font-semibold text-lg">Manual Verification</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Enter tracking or QR token manually
-                    </p>
+              <TabsContent value="history" className="mt-0">
+                {scanHistory.length === 0 ? (
+                  <div className="text-center py-8 sm:py-12">
+                    <History className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-sm sm:text-base text-muted-foreground">No scan history yet</p>
                   </div>
-
+                ) : (
                   <div className="space-y-3">
-                    <div>
-                      <Label htmlFor="token">Token / Tracking Code</Label>
-                      <Input
-                        id="token"
-                        placeholder="TRK-XXXXXXXXXX or QR token"
-                        value={manualToken}
-                        onChange={(e) => setManualToken(e.target.value.toUpperCase())}
-                        className="text-center font-mono text-lg"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleManualVerify();
-                        }}
-                      />
-                    </div>
-
-                    <Button 
-                      onClick={handleManualVerify} 
-                      className="w-full"
-                      size="lg"
-                    >
-                      Verify Product
-                    </Button>
-                  </div>
-
-                  <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                    <p className="text-xs text-blue-900 dark:text-blue-100">
-                      <strong>Example formats:</strong><br />
-                      Tracking: TRK-ABC1234567<br />
-                      QR Token: Various alphanumeric codes
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* History Tab */}
-          <TabsContent value="history" className="mt-4">
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <History className="h-12 w-12 mx-auto mb-3 text-primary" />
-                    <h3 className="font-semibold text-lg">Scan History</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Recently verified products
-                    </p>
-                  </div>
-
-                  {scanHistory.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <p className="text-sm">No scans yet</p>
-                      <p className="text-xs">Your scan history will appear here</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {scanHistory.map((item, index) => (
-                        <button
-                          key={`${item.token}-${index}`}
-                          onClick={() => handleHistoryClick(item)}
-                          className="w-full text-left p-3 rounded-lg border hover:bg-accent transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                {item.type === "qr" ? (
-                                  <QrCode className="h-4 w-4 text-primary flex-shrink-0" />
-                                ) : (
-                                  <Hash className="h-4 w-4 text-primary flex-shrink-0" />
-                                )}
-                                <p className="font-mono text-sm truncate">
-                                  {item.token}
-                                </p>
-                              </div>
-                              {item.productType && (
-                                <p className="text-xs text-muted-foreground">
-                                  {item.productType}
-                                </p>
+                    {scanHistory.map((item, index) => (
+                      <Card key={index} className="p-3 sm:p-4 bg-muted/30 active:scale-[0.98] transition-transform">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              {item.type === 'Certificate' ? (
+                                <Shield className="h-4 w-4 text-primary flex-shrink-0" />
+                              ) : (
+                                <Package className="h-4 w-4 text-secondary flex-shrink-0" />
                               )}
+                              <span className="text-xs font-semibold text-muted-foreground">
+                                {item.type}
+                              </span>
                             </div>
-                            <div className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                              {new Date(item.timestamp).toLocaleDateString()}
-                            </div>
+                            <p className="font-mono text-xs sm:text-sm font-bold truncate">
+                              {item.token}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {item.timestamp}
+                            </p>
                           </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {scanHistory.length > 0 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="min-h-[40px] min-w-[60px]"
+                            onClick={() => {
+                              if (item.type === 'Certificate') {
+                                navigate(`/verify?token=${item.token}`);
+                              } else {
+                                navigate(`/track/${item.token}`);
+                              }
+                            }}
+                          >
+                            View
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => {
                         setScanHistory([]);
-                        localStorage.removeItem("scan-history");
-                        toast.success("History cleared");
+                        localStorage.removeItem('scanHistory');
+                        toast.success('History cleared');
                       }}
-                      className="w-full"
+                      className="w-full min-h-[44px]"
                     >
                       Clear History
                     </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-        {/* Info Banner */}
-        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+        {/* Info Banner - Mobile optimized */}
+        <Card className="mt-6 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <Shield className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium mb-1">Secure Verification</p>
+              <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <div className="text-sm space-y-1">
+                <p className="font-semibold">🔒 Secure Verification</p>
                 <p className="text-xs text-muted-foreground">
-                  All scans are verified against blockchain-anchored certificates. 
-                  Works offline after initial load.
+                  Scans are verified within the app. No external redirects.
                 </p>
               </div>
             </div>

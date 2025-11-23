@@ -7,6 +7,8 @@ import CTA from "@/components/CTA";
 import Footer from "@/components/Footer";
 import FloatingParticles from "@/components/FloatingParticles";
 import { TrackingSearch } from "@/components/TrackingSearch";
+import { InstallPWAButton } from "@/components/InstallPWAButton";
+
 
 const Index = () => {
   return (
@@ -21,6 +23,7 @@ const Index = () => {
         <HowItWorks />
         <CTA />
         <Footer />
+        <InstallPWAButton />
       </div>
     </div>
   );
