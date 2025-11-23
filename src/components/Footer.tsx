@@ -14,7 +14,7 @@ const Footer = () => {
                 <img src="/AGROTRACELOGO.png"/>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                AgriQCert
+                AgroTrace
               </span>
             </div>
             <p className="text-sm text-muted-foreground font-medium">
@@ -83,7 +83,7 @@ const Footer = () => {
         
         <div className="mt-12 border-t-2 border-primary/10 pt-8 text-center">
           <p className="text-sm text-muted-foreground font-medium">
-            © 2025 AgriQCert. {t('footer.rights')}
+            © 2025 AgroTrace. {t('footer.rights')}
           </p>
         </div>
       </div>

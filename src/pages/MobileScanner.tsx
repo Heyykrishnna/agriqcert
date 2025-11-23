@@ -125,7 +125,7 @@ const MobileScanner = () => {
       <div className="bg-card/80 backdrop-blur-sm border-b border-border/50 sticky top-0 z-50 safe-top">
         <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            AgriQCert Scanner
+            AgroTrace Scanner
           </h1>
           <Link to="/">
             <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">

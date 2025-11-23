@@ -85,7 +85,7 @@ export const InstallPWAButton = () => {
             <Download className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm sm:text-base mb-1">Install AgriQCert App</h3>
+            <h3 className="font-bold text-sm sm:text-base mb-1">Install AgroTrace App</h3>
             <p className="text-xs sm:text-sm text-muted-foreground mb-3">
               Install our app for quick access and offline verification
             </p>
