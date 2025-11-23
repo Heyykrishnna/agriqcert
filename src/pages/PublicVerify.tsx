@@ -140,7 +140,7 @@ const PublicVerify = () => {
           <div className="inline-block bg-gradient-to-r from-accent/20 to-primary/20 px-6 py-2 rounded-full border-2 border-primary/30 mb-4">
             <span className="text-base font-bold text-primary">🔍 Certificate Verification</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
+          <h2 className="text-5xl pb-4 md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
             Verify Agricultural Product Certificate
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">

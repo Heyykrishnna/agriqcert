@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DollarSign, Edit, Trash2, Plus } from "lucide-react";
+import { DollarSign, Edit, Trash2, Plus, IndianRupee } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -214,7 +214,7 @@ export const BatchPricingManagement = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Batch Pricing Management</CardTitle>
-              <CardDescription>Set and manage prices for your batches in the marketplace</CardDescription>
+              <CardDescription className="pt-2">Set and manage prices for your batches in the marketplace</CardDescription>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
@@ -430,7 +430,7 @@ export const BatchPricingManagement = () => {
 
             {prices.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <IndianRupee className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p>No prices set yet. Add pricing to list batches in marketplace.</p>
               </div>
             )}

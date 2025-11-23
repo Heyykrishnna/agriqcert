@@ -76,77 +76,94 @@ export const TrackingQRCode = ({ trackingToken, batchInfo }: TrackingQRCodeProps
           <title>Batch Label - ${trackingToken}</title>
           <style>
             @page {
-              size: 4in 3in;
-              margin: 0.25in;
+              size: A5;
+              margin: 0.4in;
             }
             body {
               margin: 0;
-              padding: 20px;
+              padding: 0;
               font-family: Arial, sans-serif;
+              background: #f5f5f5;
               display: flex;
-              flex-direction: column;
               align-items: center;
               justify-content: center;
               min-height: 100vh;
             }
             .label {
+              width: 100%;
+              max-width: 420px;
+              background: #ffffff;
+              border: 1px solid #dcdcdc;
+              border-radius: 10px;
+              padding: 20px;
               text-align: center;
-              border: 2px solid #000;
-              padding: 15px;
-              border-radius: 8px;
-              background: white;
+              box-shadow: 0px 0px 6px rgba(0,0,0,0.1);
             }
             h1 {
-              font-size: 18px;
-              margin: 0 0 10px 0;
-              color: #333;
-            }
-            .tracking {
-              font-size: 16px;
+              font-size: 20px;
               font-weight: bold;
-              font-family: monospace;
-              margin: 10px 0;
-              color: #000;
+              margin-bottom: 8px;
+              color: #222;
             }
             .product-info {
               font-size: 14px;
-              margin: 10px 0;
-              color: #666;
+              color: #444;
+              margin-bottom: 12px;
             }
-            img {
-              margin: 10px 0;
+            .qr-wrapper {
+              margin: 12px 0;
+              display: flex;
+              justify-content: center;
+            }
+            .tracking {
+              margin-top: 10px;
+              font-size: 16px;
+              font-family: monospace;
+              font-weight: bold;
+              color: #111;
             }
             .footer {
-              font-size: 10px;
-              margin-top: 10px;
-              color: #888;
+              margin-top: 14px;
+              font-size: 11px;
+              color: #666;
             }
+
             @media print {
               body {
                 min-height: auto;
+                background: white;
+              }
+              .label {
+                box-shadow: none;
+                border: 1px solid #000;
               }
             }
           </style>
         </head>
         <body>
           <div class="label">
-            <h1>Agricultural Batch</h1>
+            <h1>Batch Tracking Label</h1>
+
             ${batchInfo ? `
               <div class="product-info">
-                ${batchInfo.product_type}<br/>
+                <strong>${batchInfo.product_type}</strong><br/>
                 ${batchInfo.quantity} ${batchInfo.weight_unit}
               </div>
             ` : ''}
-            <img src="${qrDataUrl}" alt="Tracking QR Code" width="180" height="180" />
+
+            <div class="qr-wrapper">
+              <img src="${qrDataUrl}" alt="Tracking QR Code" width="200" height="200" />
+            </div>
+
             <div class="tracking">${trackingToken}</div>
-            <div class="footer">Scan to track batch status</div>
+
+            <div class="footer">Scan this code to verify and track the batch lifecycle</div>
           </div>
+
           <script>
             window.onload = function() {
               window.print();
-              setTimeout(function() {
-                window.close();
-              }, 500);
+              setTimeout(() => window.close(), 500);
             };
           </script>
         </body>

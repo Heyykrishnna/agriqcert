@@ -11,13 +11,13 @@ const steps = [
     icon: ClipboardCheck,
     title: "QA Inspection",
     description: "Certified quality agencies perform thorough inspections with structured digital forms.",
-    gradient: "from-secondary to-secondary/70",
+    gradient: "from-secondary to-secondary",
   },
   {
     icon: Award,
     title: "Issue Digital Passport",
     description: "W3C-compliant verifiable credentials are generated with cryptographic signatures.",
-    gradient: "from-accent to-accent/70",
+    gradient: "from-accent to-accent",
   },
   {
     icon: ScanLine,

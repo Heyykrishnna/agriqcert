@@ -411,7 +411,7 @@ const Profile = () => {
           <div className="flex items-center gap-3">
             <Link to="/" className="flex items-center gap-2">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10b981]/20">
-                <Shield className="h-6 w-6 text-white" />
+                <img src="AGROTRACELOGO.png" className="rounded-xl"/>
               </div>
               <h1 className="text-xl font-bold text-white">My Profile</h1>
             </Link>
@@ -504,7 +504,7 @@ const Profile = () => {
                   type="file"
                   onChange={handleFileUpload}
                   disabled={uploading}
-                  className="bg-[#0A0F1C] border-gray-700 text-white file:bg-[#10b981] file:text-white file:border-0 file:mr-4 file:py-2 file:px-4 file:rounded-lg cursor-pointer"
+                  className="bg-[#0A0F1C] border-gray-700 text-white file:bg-[#10b981] file:text-white file:border-0 file:mr-4 file:px-4 file:rounded-lg cursor-pointer"
                 />
               </div>
 
@@ -730,13 +730,21 @@ const Profile = () => {
           </Card>
         </div>
 
+        {/* Right Side Illustration */}
+        <div className="hidden xl:block absolute right-10 top-40 opacity-60 pointer-events-none select-none">
+          <img
+            src="https://i.pinimg.com/1200x/a4/03/e3/a403e3919f296144d596da897796bd3a.jpg"
+            alt="Decorative Illustration"
+            className="w-[620px] h-[420px] rounded-2xl shadow-2xl border border-gray-700"
+          />
+        </div>
         {/* Security Notice */}
         <Card className="mt-6 bg-gradient-to-r from-[#10b981]/10 to-[#059669]/10 border-[#10b981]/30">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
               <Lock className="h-5 w-5 text-[#10b981] mt-1" />
               <div>
-                <h4 className="text-white font-semibold mb-1">Your documents are secure</h4>
+                <h4 className="text-green-700 font-semibold mb-1">Your documents are secure</h4>
                 <p className="text-gray-400 text-sm">
                   All documents are encrypted and stored securely. Only you can access your documents.
                   Share links are temporary and can be revoked anytime. Expiry notifications help you stay updated.

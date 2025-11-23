@@ -217,9 +217,10 @@ const BatchVerify = () => {
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <img src="/AGROTRACELOGO.png" className="h-8 w-8 text-primary transition-transform group-hover:scale-110" />
+              <Sparkles className="h-4 w-4 text-accent absolute -top-1 -right-1 animate-pulse" />
             </div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              AgroTrace
+            AgroTrace Verification
             </h1>
           </Link>
           <div className="flex gap-3">
@@ -245,7 +246,7 @@ const BatchVerify = () => {
               ✨ Batch Verification Portal
             </Badge>
           </div>
-          <h2 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
+          <h2 className="text-5xl pb-2 md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
             Verify Multiple Certificates
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
