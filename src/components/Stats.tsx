@@ -1,9 +1,9 @@
 
 const stats = [
-  { value: "99.9%", label: "Uptime SLA", icon: "⚡" },
-  { value: "<2s", label: "Verification Time", icon: "🚀" },
-  { value: "8+", label: "Languages", icon: "🌍" },
-  { value: "100%", label: "W3C Compliant", icon: "✓" },
+  { value: "99.9%", label: "Uptime SLA"},
+  { value: "<2s", label: "Verification Time"},
+  { value: "8+", label: "Languages"},
+  { value: "100%", label: "W3C Compliant"},
 ];
 
 const Stats = () => {
@@ -19,7 +19,6 @@ const Stats = () => {
               key={index} 
               className="text-center space-y-3 bg-white/10 backdrop-blur-md p-8 rounded-3xl border-2 border-white/20 shadow-2xl hover:bg-white/20 transition-all hover:scale-105"
             >
-              <div className="text-5xl mb-2">{stat.icon}</div>
               <div className="text-6xl font-extrabold text-white drop-shadow-lg">{stat.value}</div>
               <div className="text-xl text-white/90 font-semibold">{stat.label}</div>
             </div>
