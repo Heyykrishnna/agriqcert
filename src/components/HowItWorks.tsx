@@ -1,46 +1,48 @@
 import { Upload, ClipboardCheck, Award, ScanLine } from "lucide-react";
-
-const steps = [
-  {
-    icon: Upload,
-    title: "Submit Batch",
-    description: "Exporters upload product details, lab reports, and farming data through our secure portal.",
-    gradient: "from-primary to-primary/70",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "QA Inspection",
-    description: "Certified quality agencies perform thorough inspections with structured digital forms.",
-    gradient: "from-secondary to-secondary",
-  },
-  {
-    icon: Award,
-    title: "Issue Digital Passport",
-    description: "W3C-compliant verifiable credentials are generated with cryptographic signatures.",
-    gradient: "from-accent to-accent",
-  },
-  {
-    icon: ScanLine,
-    title: "Verify Anywhere",
-    description: "Customs and importers scan QR codes for instant, tamper-proof certificate verification.",
-    gradient: "from-primary via-secondary to-accent",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+  
+  const steps = [
+    {
+      icon: Upload,
+      title: t('howItWorks.step1'),
+      description: t('howItWorks.step1Desc'),
+      gradient: "from-primary to-primary",
+    },
+    {
+      icon: ClipboardCheck,
+      title: t('howItWorks.step2'),
+      description: t('howItWorks.step2Desc'),
+      gradient: "from-secondary to-secondary",
+    },
+    {
+      icon: Award,
+      title: t('howItWorks.step3'),
+      description: t('howItWorks.step3Desc'),
+      gradient: "from-accent to-accent",
+    },
+    {
+      icon: ScanLine,
+      title: t('howItWorks.step4'),
+      description: t('howItWorks.step4Desc'),
+      gradient: "from-primary via-secondary to-accent",
+    },
+  ];
 
   return (
     <section id="how-it-works" className="py-24 bg-gradient-to-b from-muted/30 to-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-20 space-y-4">
           <div className="inline-block bg-gradient-to-r from-accent/20 to-primary/20 px-6 py-2 rounded-full border-2 border-accent/30 mb-4">
-            <span className="text-base font-bold text-accent">🚀 Process Flow</span>
+            <span className="text-base font-bold text-accent">🚀 {t('howItWorks.title')}</span>
           </div>
           <h2 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[#10b981] via-[#059669] to-[#10b981] bg-clip-text text-transparent">
-            How It Works
+            {t('howItWorks.title')}
           </h2>
           <p className="text-xl text-foreground max-w-2xl mx-auto font-medium">
-            A streamlined, secure process from farm to customs
+            {t('howItWorks.subtitle')}
           </p>
         </div>
         

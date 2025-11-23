@@ -1,7 +1,9 @@
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
   return (
     <footer className="border-t-2 border-primary/20 bg-card">
       <div className="container mx-auto px-6 py-12">
@@ -12,67 +14,67 @@ const Footer = () => {
                 <img src="/AGROTRACELOGO.png"/>
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                AgroTrace
+                AgriQCert
               </span>
             </div>
             <p className="text-sm text-muted-foreground font-medium">
-              Transforming agricultural quality certification with verifiable digital passports
+              {t('footer.description')}
             </p>
           </div>
           
           <div>
-            <h3 className="mb-4 text-base font-bold text-foreground">Product</h3>
+            <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.product')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <a href="#features" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Features
+                  {t('footer.features')}
                 </a>
               </li>
               <li>
                 <Link to="/public-verify" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Verify Certificate
+                  {t('footer.verify')}
                 </Link>
               </li>
               <li>
                 <Link to="/batch-verify" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Batch Verify
+                  {t('footer.batchVerify')}
                 </Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="mb-4 text-base font-bold text-foreground">Company</h3>
+            <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.company')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  About
+                  {t('footer.about')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Blog
+                  {t('footer.contact')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Contact
+                  {t('footer.careers')}
                 </a>
               </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="mb-4 text-base font-bold text-foreground">Legal</h3>
+            <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.legal')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Privacy Policy
+                  {t('footer.privacy')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
-                  Terms of Service
+                  {t('footer.terms')}
                 </a>
               </li>
             </ul>
@@ -81,7 +83,7 @@ const Footer = () => {
         
         <div className="mt-12 border-t-2 border-primary/10 pt-8 text-center">
           <p className="text-sm text-muted-foreground font-medium">
-            © 2025 AgroTrace. All rights reserved.
+            © 2025 AgriQCert. {t('footer.rights')}
           </p>
         </div>
       </div>

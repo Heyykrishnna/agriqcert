@@ -1,0 +1,98 @@
+{
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "verifyDirect": "Verify Certificate",
+      "batchVerify": "Batch Verify",
+      "profile": "Profile",
+      "signIn": "Sign In",
+      "getStarted": "Get Started",
+      "myProfile": "My Profile"
+    },
+    "hero": {
+      "title": "Trusted Digital Certification",
+      "subtitle": "Verifiable Quality Certificates for Agricultural Exports",
+      "text": "AgroTrace transforms agricultural quality assurance with W3C-compliant Digital Product Passports. Secure, verifiable, and instantly accessible certification for global trade",
+      "getStarted": "Get Started",
+      "verifyCertificate": "Verify Certificate",
+      "w3cCompliant": "W3C Compliant VCs",
+      "blockchainVerified": "Blockchain Verified",
+      "instantQRAccess": "Instant QR Access"
+    },
+    "features": {
+      "title": "Platform Features",
+      "subtitle": "Everything you need for seamless agricultural export certification",
+      "w3cCredentials": "W3C Verifiable Credentials",
+      "w3cDesc": "Industry-standard digital credentials with cryptographic verification and global interoperability",
+      "blockchainAnchor": "Blockchain Anchoring",
+      "blockchainDesc": "Tamper-proof certificate verification with immutable transaction records on blockchain",
+      "qrVerification": "QR Code Verification",
+      "qrDesc": "Instant certificate validation through mobile QR scanning with offline capability",
+      "multiStakeholder": "Multi-Stakeholder Portal",
+      "multiStakeholderDesc": "Dedicated dashboards for exporters, QA agencies, and importers with role-based access",
+      "digitalWallet": "Digital Wallet Integration",
+      "digitalWalletDesc": "Import credentials into Inji wallet for portable, self-sovereign identity management",
+      "auditTrail": "Complete Audit Trail",
+      "auditTrailDesc": "Full transparency with timestamped records of all certification and verification activities"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Simple, transparent process from batch submission to verification",
+      "description": "Our platform streamlines the entire quality certification workflow with blockchain-verified credentials",
+      "step1": "Batch Submission",
+      "step1Desc": "Exporters submit batch details, documentation, and request quality inspection",
+      "step2": "QA Inspection",
+      "step2Desc": "Certified agencies conduct thorough inspection and testing with detailed reporting",
+      "step3": "Credential Issuance",
+      "step3Desc": "W3C Verifiable Credentials generated and anchored to blockchain with unique QR codes",
+      "step4": "Instant Verification",
+      "step4Desc": "Anyone can verify authenticity by scanning QR code or entering batch tracking token"
+    },
+    "stats": {
+      "uptime": "Uptime SLA",
+      "verificationTime": "Verification Time",
+      "languages": "Languages",
+      "w3cCompliant": "W3C Compliant"
+    },
+    "cta": {
+      "title": "Ready to Transform Your Certification Process?",
+      "subtitle": "Join leading agricultural exporters using blockchain-verified W3C credentials for trusted quality assurance",
+      "startTrial": "Start Free Trial",
+      "scheduleDemo": "Schedule Demo"
+    },
+    "footer": {
+      "description": "Blockchain-verified W3C Verifiable Credentials for agricultural export quality certification",
+      "product": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "verify": "Verify Certificate",
+      "batchVerify": "Batch Verify",
+      "company": "Company",
+      "about": "About Us",
+      "contact": "Contact",
+      "careers": "Careers",
+      "legal": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "compliance": "Compliance",
+      "rights": "All rights reserved."
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "close": "Close",
+      "submit": "Submit",
+      "search": "Search",
+      "filter": "Filter",
+      "download": "Download",
+      "upload": "Upload",
+      "back": "Back",
+      "next": "Next",
+      "previous": "Previous"
+    }
+  }

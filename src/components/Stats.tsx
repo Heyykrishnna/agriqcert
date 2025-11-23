@@ -1,12 +1,14 @@
-
-const stats = [
-  { value: "99.9%", label: "Uptime SLA"},
-  { value: "<2s", label: "Verification Time"},
-  { value: "8+", label: "Languages"},
-  { value: "100%", label: "W3C Compliant"},
-];
+import { useTranslation } from "react-i18next";
 
 const Stats = () => {
+  const { t } = useTranslation();
+  
+  const stats = [
+    { value: "99.9%", label: t('stats.uptime') },
+    { value: "<2s", label: t('stats.verificationTime') },
+    { value: "8+", label: t('stats.languages') },
+    { value: "100%", label: t('stats.w3cCompliant')},
+  ];
 
   return (
     <section className="py-20 bg-gradient-to-r from-primary via-secondary to-accent relative overflow-hidden">

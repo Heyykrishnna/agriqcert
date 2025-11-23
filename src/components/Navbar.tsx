@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Sparkles, User } from "lucide-react";
+import { Sparkles, User, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Navbar = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <nav 
@@ -20,42 +23,43 @@ const Navbar = () => {
               </div>
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              AgroTrace
+            AgroTrace
             </span>
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-base font-semibold text-foreground hover:text-primary transition-all hover:scale-105">
-              Features
+              {t('nav.features')}
             </a>
             <a href="#how-it-works" className="text-base font-semibold text-foreground hover:text-secondary transition-all hover:scale-105">
-              How It Works
+              {t('nav.howItWorks')}
             </a>
             <Link to="/public-verify" className="text-base font-semibold text-foreground hover:text-accent transition-all hover:scale-105">
-              Verify Certificate
+              {t('nav.verifyDirect')}
             </Link>
             <Link to="/batch-verify" className="text-base font-semibold text-foreground hover:text-primary transition-all hover:scale-105">
-              Batch Verify
+              {t('nav.batchVerify')}
             </Link>
             {user && (
-              <Link to="/profile" className="text-base font-semibold text-foreground hover:text-accent transition-all hover:scale-105 flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Profile
+              <Link to="/auth" className="text-base font-semibold text-foreground hover:text-accent transition-all hover:scale-105 flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                {t('nav.getStarted')}
               </Link>
             )}
           </div>
           
           <div className="flex items-center gap-4">
+            <LanguageSelector />
             {!user ? (
               <>
                 <Link to="/auth">
                   <Button variant="outline" size="lg" className="font-bold border-2 hover:border-primary transition-all">
-                    Sign In
+                    {t('nav.signIn')}
                   </Button>
                 </Link>
                 <Link to="/auth">
                   <Button size="lg" className="font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl">
-                    Get Started
+                    {t('nav.getStarted')}
                   </Button>
                 </Link>
               </>
@@ -63,7 +67,7 @@ const Navbar = () => {
               <Link to="/profile">
                 <Button size="lg" className="font-bold bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-xl">
                   <User className="h-5 w-5 mr-2" />
-                  My Profile
+                  {t('nav.myProfile')}
                 </Button>
               </Link>
             )}
