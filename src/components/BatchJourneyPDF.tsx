@@ -353,9 +353,9 @@ export const BatchJourneyPDF = ({
   };
 
   return (
-    <Button onClick={generatePDF} variant="outline">
-      <Download className="mr-2 h-4 w-4" />
-      Download Journey Report (PDF)
+    <Button onClick={generatePDF} variant="outline" className="flex items-center gap-2">
+      <Download className="h-4 w-4" />
+      <span className="hidden sm:inline">Download Journey Report (PDF)</span>
     </Button>
   );
 };
