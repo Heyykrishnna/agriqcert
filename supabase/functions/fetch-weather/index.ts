@@ -21,18 +21,18 @@ serve(async (req) => {
       );
     }
 
-    const OPENWEATHER_API_KEY = Deno.env.get("OPENWEATHERMAP_API_KEY");
+    const VISUAL_CROSSING_API_KEY = Deno.env.get("VISUAL_CROSSING_API_KEY");
     
-    if (!OPENWEATHER_API_KEY) {
-      console.error("OpenWeatherMap API key not configured");
+    if (!VISUAL_CROSSING_API_KEY) {
+      console.error("Visual Crossing API key not configured");
       return new Response(
         JSON.stringify({ error: "Weather service not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Fetch current weather data from OpenWeatherMap
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHER_API_KEY}&units=metric`;
+    // Fetch current weather data from Visual Crossing
+    const weatherUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${latitude},${longitude}?key=${VISUAL_CROSSING_API_KEY}&unitGroup=metric&include=current&contentType=json`;
     
     console.log("Fetching weather data for coordinates:", { latitude, longitude });
     
@@ -40,7 +40,7 @@ serve(async (req) => {
     
     if (!weatherResponse.ok) {
       const errorText = await weatherResponse.text();
-      console.error("OpenWeatherMap API error:", errorText);
+      console.error("Visual Crossing API error:", errorText);
       return new Response(
         JSON.stringify({ error: "Failed to fetch weather data" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -51,16 +51,17 @@ serve(async (req) => {
     
     console.log("Weather data received:", weatherData);
 
-    // Extract relevant weather information
+    // Extract relevant weather information from Visual Crossing response
+    const currentConditions = weatherData.currentConditions;
     const weatherRecord = {
-      temperature_celsius: weatherData.main?.temp || null,
-      humidity_percent: weatherData.main?.humidity || null,
-      rainfall_mm: weatherData.rain?.["1h"] || 0,
-      wind_speed_kmh: weatherData.wind?.speed ? (weatherData.wind.speed * 3.6).toFixed(2) : null, // Convert m/s to km/h
-      conditions: weatherData.weather?.[0]?.description || null,
+      temperature_celsius: currentConditions?.temp || null,
+      humidity_percent: currentConditions?.humidity || null,
+      rainfall_mm: currentConditions?.precip || 0,
+      wind_speed_kmh: currentConditions?.windspeed || null,
+      conditions: currentConditions?.conditions || null,
       location_lat: latitude,
       location_lon: longitude,
-      data_source: "openweathermap",
+      data_source: "visualcrossing",
     };
 
     // If batchId is provided, save the weather data to the database
