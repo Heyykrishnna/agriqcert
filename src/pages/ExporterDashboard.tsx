@@ -9,7 +9,9 @@ import { BatchSubmissionForm } from "@/components/BatchSubmissionForm";
 import { BatchList } from "@/components/BatchList";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
 import { BatchPricingManagement } from "@/components/BatchPricingManagement";
-import { Package, FileCheck, CheckCircle } from "lucide-react";
+import { Package, FileCheck, CheckCircle, CircleChevronLeft, Link } from "lucide-react";
+import { ExporterInquiries } from "@/components/ExporterInquiries";
+
 
 const ExporterDashboard = () => {
   const { user, signOut } = useAuth();
@@ -57,6 +59,9 @@ const ExporterDashboard = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <a href="/" className="flex ietms-center gap-2">
+              <CircleChevronLeft className="h-6 w-6"/>
+            </a>
           <h1 className="text-2xl font-bold">Exporter Dashboard</h1>
           <DashboardProfileMenu 
             userEmail={user?.email || ""} 
@@ -99,10 +104,11 @@ const ExporterDashboard = () => {
 
         {/* Tabs for Batch Management */}
         <Tabs defaultValue="batches" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 max-w-2xl">
+        <TabsList className="grid w-full grid-cols-4 max-w-3xl">
             <TabsTrigger value="batches">My Batches</TabsTrigger>
             <TabsTrigger value="submit">Submit New Batch</TabsTrigger>
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
+            <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
           </TabsList>
 
           <TabsContent value="batches" className="mt-6">
@@ -115,6 +121,9 @@ const ExporterDashboard = () => {
 
           <TabsContent value="pricing" className="mt-6">
             <BatchPricingManagement />
+          </TabsContent>
+          <TabsContent value="inquiries" className="mt-6">
+            <ExporterInquiries />
           </TabsContent>
         </Tabs>
       </main>

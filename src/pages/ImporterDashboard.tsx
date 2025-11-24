@@ -18,7 +18,9 @@ import {
   Calendar,
   CheckCircle,
   XCircle,
-  Clock
+  Clock,
+  House,
+  CircleChevronLeft
 } from "lucide-react";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
 import { AvailableBatches } from "@/components/AvailableBatches";
@@ -96,11 +98,13 @@ const ImporterDashboard = () => {
       <header className="border-b bg-card">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
+          <a href="/" className="flex ietms-center gap-2">
+              <CircleChevronLeft className="h-6 w-6"/>
+            </a>
             <div className="flex items-center gap-3">
-              <ShoppingCart className="h-8 w-8 text-primary" />
               <div>
                 <h1 className="text-2xl font-bold">Importer Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Source quality products globally</p>
+                <p className="text-sm text-muted-foreground text-center">Source quality products globally</p>
               </div>
             </div>
             <DashboardProfileMenu userEmail={user?.email || ""} onSignOut={handleSignOut} />

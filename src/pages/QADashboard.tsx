@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ClipboardCheck, Package, Award } from "lucide-react";
+import { ClipboardCheck, Package, Award, CircleChevronLeft } from "lucide-react";
 import { BatchInspectionQueue } from "@/components/BatchInspectionQueue";
 import { AssignedInspections } from "@/components/AssignedInspections";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
@@ -56,6 +56,9 @@ const QADashboard = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <a href="/" className="flex ietms-center gap-2">
+              <CircleChevronLeft className="h-6 w-6"/>
+            </a>
           <h1 className="text-2xl font-bold">{t('QA Inspection Portal')}</h1>
           <DashboardProfileMenu 
             userEmail={user?.email || ""} 
