@@ -14,8 +14,7 @@ const Hero = () => {
       <div className="container relative mx-auto px-6 z-10">
         <div className="grid items-center gap-16 lg:grid-cols-2">
           <div className="space-y-8">
-            <div className="animate-fade-in inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 px-6 py-3 backdrop-blur-sm border-2 border-primary/30 shadow-lg" style={{ animationDelay: '0.2s' }}>
-              <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+            <div className="animate-fade-in inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 px-6 py-3 backdrop-blur-sm border-2 border-primary/30 shadow-lg">
               <span className="text-base font-bold text-foreground">{t('hero.title')}</span>
             </div>
             

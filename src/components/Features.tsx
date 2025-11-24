@@ -49,7 +49,7 @@ const Features = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 space-y-4">
           <div className="inline-block bg-gradient-to-r from-primary/20 to-secondary/20 px-6 py-2 rounded-full border-2 border-primary/30 mb-4">
-            <span className="text-base font-bold text-primary">✨ {t('features.title')}</span>
+            <span className="text-base font-bold text-primary">{t('features.title')}</span>
           </div>
           <h2 className="text-5xl font-extrabold tracking-tight text-foreground">
             {t('features.subtitle')}

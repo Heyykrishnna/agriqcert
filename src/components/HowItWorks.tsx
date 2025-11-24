@@ -36,7 +36,7 @@ const HowItWorks = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-20 space-y-4">
           <div className="inline-block bg-gradient-to-r from-accent/20 to-primary/20 px-6 py-2 rounded-full border-2 border-accent/30 mb-4">
-            <span className="text-base font-bold text-accent">🚀 {t('howItWorks.title')}</span>
+            <span className="text-base font-bold text-accent">{t('howItWorks.title')}</span>
           </div>
           <h2 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-[#10b981] via-[#059669] to-[#10b981] bg-clip-text text-transparent">
             {t('howItWorks.title')}
@@ -48,7 +48,7 @@ const HowItWorks = () => {
         
         <div className="relative">
           {/* Connection line */}
-          <div className="absolute left-12 top-24 bottom-24 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-full hidden lg:block shadow-lg"></div>
+          <div className="absolute left-10 top-16 bottom-24 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-full hidden lg:block shadow-lg"></div>
           
           <div className="space-y-16">
             {steps.map((step, index) => {

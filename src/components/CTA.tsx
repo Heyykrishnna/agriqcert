@@ -14,7 +14,6 @@ const CTA = () => {
           
           <div className="relative space-y-8 max-w-4xl mx-auto">
             <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full border-2 border-white/30 mb-4">
-              <Sparkles className="inline-block h-5 w-5 text-white mr-2 animate-pulse" />
               <span className="text-base font-bold text-white">{t('cta.title')}</span>
             </div>
             
