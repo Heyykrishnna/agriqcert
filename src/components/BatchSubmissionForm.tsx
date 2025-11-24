@@ -15,7 +15,7 @@ import { Loader2, Upload, X, FileText } from "lucide-react";
 
 const batchSchema = z.object({
   product_type: z.string().min(1, "Product type is required"),
-  variety: z.string().optional(),
+  variety: z.string().min(1, "Product variety is required"),
   quantity: z.string().min(1, "Quantity is required").refine((val) => !isNaN(Number(val)) && Number(val) > 0, "Quantity must be a positive number"),
   weight_unit: z.enum(["kg", "lbs", "tons", "mt"]),
   packaging_type: z.string().optional(),
@@ -176,7 +176,7 @@ export const BatchSubmissionForm = ({ onSuccess }: BatchSubmissionFormProps) => 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="variety">Variety</Label>
+                <Label htmlFor="variety">Variety *</Label>
                 <Input
                   id="variety"
                   {...register("variety")}

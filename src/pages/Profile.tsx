@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { FileText, Upload, Trash2, Download, LogOut, Shield, Lock, Share2, Calendar, AlertTriangle, Copy, Clock, Archive, Tags, Filter, Search, CheckSquare, FolderArchive } from "lucide-react";
+import { FileText, Upload, Trash2, Download, LogOut, Shield, Lock, Share2, Calendar, AlertTriangle, House,  Copy, Clock, Archive, Tags, Filter, Search, CheckSquare, FolderArchive } from "lucide-react";
 import FloatingParticles from "@/components/FloatingParticles";
 import gsap from "gsap";
 import { Link } from "react-router-dom";
@@ -409,7 +409,7 @@ const Profile = () => {
       <header ref={headerRef} className="border-b border-gray-800 bg-[#1a1f35]/50 backdrop-blur-xl relative z-10">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2">
+            <Link to="/auth" className="flex items-center gap-2">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#10b981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10b981]/20">
                 <img src="AGROTRACELOGO.png" className="rounded-xl"/>
               </div>
@@ -417,6 +417,9 @@ const Profile = () => {
             </Link>
           </div>
           <div className="flex items-center gap-4">
+          <Link to= "/" className="flex ietms-center gap-2 text-white">
+              <House className="h-4 w-4"/>
+            </Link>
             <span className="text-sm text-gray-400">{user?.email}</span>
             <Button 
               variant="ghost" 
@@ -504,7 +507,7 @@ const Profile = () => {
                   type="file"
                   onChange={handleFileUpload}
                   disabled={uploading}
-                  className="bg-[#0A0F1C] border-gray-700 text-white file:bg-[#10b981] file:text-white file:border-0 file:mr-4 file:px-4 file:rounded-lg cursor-pointer"
+                  className="bg-[#0A0F1C] border-gray-700 text-white file:bg-[#567568] file:text-white file:border-0 file:mr-4 file:px-4 file:rounded-lg cursor-pointer"
                 />
               </div>
 
@@ -731,11 +734,11 @@ const Profile = () => {
         </div>
 
         {/* Right Side Illustration */}
-        <div className="hidden xl:block absolute right-10 top-40 opacity-60 pointer-events-none select-none">
+        <div className="hidden xl:block absolute right-10 top-40 opacity-60">
           <img
             src="https://i.pinimg.com/1200x/a4/03/e3/a403e3919f296144d596da897796bd3a.jpg"
             alt="Decorative Illustration"
-            className="w-[620px] h-[420px] rounded-2xl shadow-2xl border border-gray-700"
+            className="w-[620px] h-[420px] rounded-2xl shadow-2xl border border-gray-700 hover:border-4 hover:border-[#385D31]"
           />
         </div>
         {/* Security Notice */}
