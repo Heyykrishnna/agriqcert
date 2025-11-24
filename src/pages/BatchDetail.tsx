@@ -505,24 +505,15 @@ const BatchDetail = () => {
 
             <TabsContent value="analytics" className="mt-6">
               <div className="space-y-6">
-                <SoilAnalytics batchId={id || ""} isEditable={userRole === "exporter"} />
-                <FarmCertifications batchId={id || ""} isEditable={userRole === "exporter"} />
-                <SustainablePractices batchId={id || ""} isEditable={userRole === "exporter"} />
                 <WeatherTracking 
                   batchId={id || ""} 
                   isEditable={userRole === "exporter"}
                   batchLatitude={batch?.origin_lat}
                   batchLongitude={batch?.origin_lon}
                 />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="analytics" className="mt-6">
-              <div className="space-y-6">
                 <SoilAnalytics batchId={id || ""} isEditable={userRole === "exporter"} />
                 <FarmCertifications batchId={id || ""} isEditable={userRole === "exporter"} />
                 <SustainablePractices batchId={id || ""} isEditable={userRole === "exporter"} />
-                <WeatherTracking batchId={id || ""} isEditable={userRole === "exporter"} />
               </div>
             </TabsContent>
 
