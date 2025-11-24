@@ -5,7 +5,21 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, Package, MapPin, Calendar, Eye } from "lucide-react";
+import { Loader2, Package, MapPin, Calendar, Eye, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { BatchEditDialog } from "./BatchEditDialog";
+
 import { format } from "date-fns";
 
 interface Batch {
@@ -16,8 +30,11 @@ interface Batch {
   weight_unit: string;
   status: string;
   origin_country: string;
+  origin_state: string | null;
+  origin_address: string | null;
   destination_country: string;
   harvest_date: string;
+  packaging_type: string | null;
   expected_ship_date: string | null;
   created_at: string;
   tracking_token: string;
@@ -51,6 +68,24 @@ export const BatchList = () => {
       setLoading(false);
     }
   };
+
+  const handleDelete = async (batchId: string) => {
+    try {
+      const { error } = await supabase
+        .from("batches")
+        .delete()
+        .eq("id", batchId);
+
+      if (error) throw error;
+      
+      toast.success("Batch deleted successfully");
+      fetchBatches();
+    } catch (error) {
+      console.error("Error deleting batch:", error);
+      toast.error("Failed to delete batch");
+    }
+  };
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -137,14 +172,42 @@ export const BatchList = () => {
               <div className="text-xs text-muted-foreground">
                 Submitted {format(new Date(batch.created_at), "PPP")}
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(`/batch/${batch.id}`)}
-              >
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(`/batch/${batch.id}`)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Details
+                </Button>
+                <BatchEditDialog batch={batch} onSuccess={fetchBatches} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Batch</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete this batch? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(batch.id)}>
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           </CardContent>
         </Card>

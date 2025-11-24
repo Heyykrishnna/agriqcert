@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardCheck, Package, Award } from "lucide-react";
-import { AvailableBatches } from "@/components/AvailableBatches";
+import { BatchInspectionQueue } from "@/components/BatchInspectionQueue";
 import { AssignedInspections } from "@/components/AssignedInspections";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 const QADashboard = () => {
   const { user, signOut } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     assigned: 0,
@@ -54,7 +56,7 @@ const QADashboard = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <h1 className="text-2xl font-bold">QA Dashboard</h1>
+          <h1 className="text-2xl font-bold">{t('QA Inspection Portal')}</h1>
           <DashboardProfileMenu 
             userEmail={user?.email || ""} 
             onSignOut={handleSignOut}
@@ -67,7 +69,7 @@ const QADashboard = () => {
         <div className="mb-8 grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Assigned Inspections</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('Assigned Inspections')}</CardTitle>
               <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -76,7 +78,7 @@ const QADashboard = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Completed</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('Completed')}</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -85,7 +87,7 @@ const QADashboard = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Certificates Issued</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('Certificates Issued')}</CardTitle>
               <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -95,14 +97,14 @@ const QADashboard = () => {
         </div>
 
         {/* Tabs for Batch Management */}
-        <Tabs defaultValue="available" className="w-full">
+        <Tabs defaultValue="queue" className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="available">Available Batches</TabsTrigger>
-            <TabsTrigger value="assigned">My Inspections</TabsTrigger>
+            <TabsTrigger value="queue">Inspection Queue</TabsTrigger>
+            <TabsTrigger value="assigned">{t('My Inspections')}</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="available" className="mt-6">
-            <AvailableBatches />
+          <TabsContent value="queue" className="mt-6">
+            <BatchInspectionQueue />
           </TabsContent>
 
           <TabsContent value="assigned" className="mt-6">

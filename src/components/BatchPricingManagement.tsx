@@ -68,10 +68,10 @@ export const BatchPricingManagement = () => {
         .from("batches")
         .select("*")
         .eq("exporter_id", user?.id)
-        .in("status", ["Certified", "Under Inspection"])
         .order("created_at", { ascending: false });
 
       if (batchError) throw batchError;
+      console.log("Fetched batches:", batchData); // Debug log
       setBatches(batchData || []);
 
       // Fetch existing prices

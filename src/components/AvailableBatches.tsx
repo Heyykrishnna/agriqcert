@@ -64,6 +64,51 @@ export const AvailableBatches = ({ onInquirySubmit }: AvailableBatchesProps) => 
 
   useEffect(() => {
     fetchBatches();
+
+
+    // Subscribe to real-time updates for new batches
+    const channel = supabase
+      .channel('qa-batches-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'batches'
+        },
+        () => {
+          // Refetch batches when a new one is created
+          fetchBatches();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'batches'
+        },
+        () => {
+          fetchBatches();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'batches'
+        },
+        () => {
+
+          fetchBatches();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchBatches = async () => {
@@ -74,7 +119,7 @@ export const AvailableBatches = ({ onInquirySubmit }: AvailableBatchesProps) => 
       const { data: certifiedBatches, error: batchError } = await supabase
         .from("batches")
         .select("*")
-        .eq("status", "Certified")
+        .in("status", ["Submitted", "Certified", "Under Inspection"])
         .order("created_at", { ascending: false });
 
       if (batchError) throw batchError;
