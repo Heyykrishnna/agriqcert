@@ -243,7 +243,7 @@ const BatchVerify = () => {
         <div ref={heroRef} className="mb-12 text-center space-y-4">
           <div className="inline-block">
             <Badge className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-accent/20 to-primary/20 border-primary/30">
-              ✨ Batch Verification Portal
+              Batch Verification Portal
             </Badge>
           </div>
           <h2 className="text-5xl pb-2 md:text-6xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
@@ -271,7 +271,14 @@ const BatchVerify = () => {
                   Tokens (one per line or comma-separated)
                 </label>
                 <Textarea
-                  placeholder="Enter verification tokens...&#10;&#10;Example:&#10;abc123def456ghi789&#10;jkl012mno345pqr678&#10;&#10;or: token1, token2, token3"
+                  placeholder={`Please enter the verification tokens in the space provided.
+
+Examples of valid tokens:
+abc123def456ghi789
+jkl012mno345pqr678
+
+Alternatively, you may input tokens in a comma-separated format (e.g., token1, token2, token3).
+`}
                   value={tokens}
                   onChange={(e) => setTokens(e.target.value)}
                   rows={8}
