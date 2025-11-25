@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
 import { AuditLogViewer } from "@/components/AuditLogViewer";
-import { Users, Package, ClipboardCheck, Award } from "lucide-react";
+import { Users, Package, ClipboardCheck, Award, CircleChevronLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -211,6 +211,9 @@ const AdminDashboard = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
+        <a href="/" className="flex ietms-center gap-2">
+              <CircleChevronLeft className="h-6 w-6"/>
+            </a>
           <h1 className="text-2xl font-bold">Admin Dashboard</h1>
           <DashboardProfileMenu 
             userEmail={user?.email || ""} 
