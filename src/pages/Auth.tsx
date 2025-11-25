@@ -18,7 +18,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ const Auth = () => {
         duration: 0.8,
         ease: "power3.out"
       });
-      
+
       gsap.from(cardRef.current, {
         y: 30,
         opacity: 0,
@@ -82,12 +82,12 @@ const Auth = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (signUpPassword.length < 6) {
       setError("Password must be at least 6 characters");
       return;
     }
-    
+
     setLoading(true);
     try {
       await signUp(signUpEmail, signUpPassword, fullName, role);
@@ -105,12 +105,12 @@ const Auth = () => {
   return (
     <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0A0F1C] via-[#1a1f35] to-[#0A0F1C] p-6 relative overflow-hidden">
       <FloatingParticles />
-      
+
       <div className="w-full max-w-md relative z-10">
         <div ref={logoRef} className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] shadow-lg shadow-[#10b981]/20 group-hover:shadow-[#10b981]/40 transition-all duration-300 group-hover:scale-110">
-              <img src="/AGROTRACELOGO.png"/>
+              <img src="/AGROTRACELOGO.png" className="rounded-2xl" />
             </div>
             <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
               AgroTrace
@@ -167,9 +167,9 @@ const Auth = () => {
                         className="bg-[#0A0F1C] border-gray-700 text-white focus:border-[#10b981]"
                       />
                     </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300" 
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300"
                       disabled={loading}
                     >
                       {loading ? "Signing in..." : "Sign In"}
@@ -258,9 +258,9 @@ const Auth = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300" 
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300"
                       disabled={loading}
                     >
                       {loading ? "Creating account..." : "Create Account"}
@@ -272,7 +272,7 @@ const Auth = () => {
           </Tabs>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            By continuing, you agree to our <a href="/terms" className="text-[#10b981] font-semibold"> Terms of Service</a> and <a href="/privacy" className="text-[#10b981] font-semibold">Privacy Policy</a>
           </p>
         </div>
       </div>

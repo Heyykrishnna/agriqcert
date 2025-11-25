@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
-                <img src="/AGROTRACELOGO.png"/>
+                <img src="/AGROTRACELOGO.png" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 AgroTrace
@@ -21,7 +21,7 @@ const Footer = () => {
               {t('footer.description')}
             </p>
           </div>
-          
+
           <div>
             <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.product')}</h3>
             <ul className="space-y-3 text-sm">
@@ -42,14 +42,14 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.company')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
+                <Link to="/about" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   {t('footer.about')}
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
@@ -63,24 +63,24 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="mb-4 text-base font-bold text-foreground">{t('footer.legal')}</h3>
             <ul className="space-y-3 text-sm">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
+                <Link to="/privacy" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   {t('footer.privacy')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors font-medium">
+                <Link to="/terms" className="text-muted-foreground hover:text-primary transition-colors font-medium">
                   {t('footer.terms')}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
-        
+
         <div className="mt-12 border-t-2 border-primary/10 pt-8 text-center">
           <p className="text-sm text-muted-foreground font-medium">
             © 2025 AgroTrace. {t('footer.rights')}
