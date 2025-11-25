@@ -1,68 +1,67 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Package, MapPin, Calendar, ClipboardCheck, Loader2 } from "lucide-react";
-import { format } from "date-fns";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { Loader2, Calendar, MapPin, Package, User } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
+import { InspectorSelector } from "./InspectorSelector";
 
 interface Batch {
   id: string;
   product_type: string;
-  variety: string | null;
   quantity: number;
   weight_unit: string;
   origin_country: string;
   origin_state: string | null;
+  origin_address: string | null;
+  destination_country: string;
+  variety: string | null;
+  packaging_type: string | null;
   harvest_date: string;
+  expected_ship_date: string | null;
   status: string;
   tracking_token: string;
   created_at: string;
   exporter_id: string;
+  profiles: {
+    organization_name: string | null;
+    email: string;
+  } | null;
 }
 
 export const BatchInspectionQueue = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState<string | null>(null);
+  const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
+  const [schedulingOpen, setSchedulingOpen] = useState(false);
+  const [inspectionType, setInspectionType] = useState<"physical" | "virtual">("physical");
+  const [scheduledDate, setScheduledDate] = useState("");
+  const [selectedInspector, setSelectedInspector] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchBatches();
 
-    // Subscribe to real-time updates
     const channel = supabase
-      .channel('qa-inspection-queue')
+      .channel('batch-changes')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'batches'
-        },
-        () => {
-          fetchBatches();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'batches'
-        },
-        () => {
-          fetchBatches();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
+          event: '*',
           schema: 'public',
           table: 'batches'
         },
@@ -79,17 +78,19 @@ export const BatchInspectionQueue = () => {
 
   const fetchBatches = async () => {
     try {
-      setLoading(true);
-
-      // Fetch batches that are submitted and waiting for inspection
       const { data, error } = await supabase
         .from("batches")
-        .select("*")
+        .select(`
+          *,
+          profiles:exporter_id (
+            organization_name,
+            email
+          )
+        `)
         .eq("status", "Submitted")
-        .order("created_at", { ascending: true }); // Oldest first
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
-
       setBatches(data || []);
     } catch (error) {
       console.error("Error fetching batches:", error);
@@ -99,43 +100,58 @@ export const BatchInspectionQueue = () => {
     }
   };
 
-  const handleClaimInspection = async (batchId: string, exporterId: string) => {
-    if (!user) return;
+  const handleClaimInspection = (batch: Batch) => {
+    setSelectedBatch(batch);
+    setSchedulingOpen(true);
+  };
 
+  const handleScheduleInspection = async () => {
+    if (!selectedBatch || !scheduledDate) {
+      toast.error("Please select a date for the inspection");
+      return;
+    }
+
+    setClaiming(selectedBatch.id);
     try {
-      setClaiming(batchId);
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      // Create an inspection record
-      const { data: inspection, error: inspectionError } = await supabase
+      if (!user) {
+        toast.error("You must be logged in to claim inspections");
+        return;
+      }
+
+      const { error: inspectionError } = await supabase
         .from("inspections")
         .insert({
-          batch_id: batchId,
+          batch_id: selectedBatch.id,
           qa_agency_id: user.id,
-          exporter_id: exporterId,
+          inspector_id: selectedInspector && selectedInspector !== "unassigned" ? selectedInspector : null,
           status: "Pending",
-          scheduled_date: new Date().toISOString(),
-        })
-        .select()
-        .single();
+          scheduled_date: scheduledDate,
+          comments: `${inspectionType === "physical" ? "Physical" : "Virtual"} inspection scheduled`,
+        });
 
       if (inspectionError) throw inspectionError;
 
-      // Update batch status to Under Inspection
       const { error: updateError } = await supabase
         .from("batches")
         .update({ status: "Under Inspection" })
-        .eq("id", batchId);
+        .eq("id", selectedBatch.id);
 
       if (updateError) throw updateError;
 
-      toast.success("Inspection claimed successfully!");
+      toast.success(`${inspectionType === "physical" ? "Physical" : "Virtual"} inspection scheduled successfully`);
+      setSchedulingOpen(false);
+      setSelectedBatch(null);
+      setScheduledDate("");
+      setInspectionType("physical");
+      setSelectedInspector("");
       fetchBatches();
-      
-      // Navigate to the inspection form
-      navigate(`/batch/${batchId}`);
     } catch (error) {
       console.error("Error claiming inspection:", error);
-      toast.error("Failed to claim inspection");
+      toast.error("Failed to schedule inspection");
     } finally {
       setClaiming(null);
     }
@@ -152,10 +168,12 @@ export const BatchInspectionQueue = () => {
   if (batches.length === 0) {
     return (
       <Card>
-        <CardContent className="flex flex-col items-center justify-center p-8">
-          <Package className="h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground text-center">
-            No batches waiting for inspection at the moment.
+        <CardHeader>
+          <CardTitle>Inspection Requests</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <p className="text-center text-muted-foreground">
+            No inspection requests at the moment
           </p>
         </CardContent>
       </Card>
@@ -163,82 +181,188 @@ export const BatchInspectionQueue = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold">Inspection Queue</h3>
-          <p className="text-sm text-muted-foreground">
-            {batches.length} batch{batches.length !== 1 ? 'es' : ''} waiting for inspection
-          </p>
+    <>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Inspection Requests</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              {batches.length} pending inspection request{batches.length !== 1 ? 's' : ''}
+            </p>
+          </CardHeader>
+        </Card>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          {batches.map((batch) => (
+            <Card key={batch.id}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg">{batch.product_type}</CardTitle>
+                    {batch.variety && (
+                      <p className="text-sm text-muted-foreground">{batch.variety}</p>
+                    )}
+                  </div>
+                  <Badge variant="outline">New Request</Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Exporter Info */}
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="font-medium">{batch.profiles?.organization_name || "Unknown Exporter"}</p>
+                    <p className="text-xs text-muted-foreground">{batch.profiles?.email}</p>
+                  </div>
+                </div>
+
+                {/* Location Info */}
+                <div className="flex items-start gap-2 text-sm">
+                  <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <div>
+                    <p className="font-medium">{batch.origin_country}</p>
+                    {batch.origin_state && <p className="text-xs text-muted-foreground">{batch.origin_state}</p>}
+                    {batch.origin_address && <p className="text-xs text-muted-foreground">{batch.origin_address}</p>}
+                  </div>
+                </div>
+
+                {/* Batch Details */}
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Quantity</p>
+                    <p className="font-medium flex items-center gap-1">
+                      <Package className="h-3 w-3" />
+                      {batch.quantity} {batch.weight_unit}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Packaging</p>
+                    <p className="font-medium">{batch.packaging_type || "N/A"}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Harvest Date</p>
+                    <p className="font-medium">
+                      {new Date(batch.harvest_date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Ship Date</p>
+                    <p className="font-medium">
+                      {batch.expected_ship_date ? new Date(batch.expected_ship_date).toLocaleDateString() : "TBD"}
+                    </p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-muted-foreground">Destination</p>
+                    <p className="font-medium">{batch.destination_country}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-muted-foreground">Tracking Token</p>
+                    <p className="font-medium font-mono text-xs">{batch.tracking_token}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-muted-foreground">Requested On</p>
+                    <p className="font-medium text-xs">
+                      {new Date(batch.created_at).toLocaleDateString()} at {new Date(batch.created_at).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  className="w-full mt-4"
+                  onClick={() => handleClaimInspection(batch)}
+                  disabled={claiming === batch.id}
+                >
+                  {claiming === batch.id ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Scheduling...
+                    </>
+                  ) : (
+                    <>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Schedule Inspection
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {batches.map((batch) => (
-          <Card key={batch.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg">{batch.product_type}</CardTitle>
-                  {batch.variety && (
-                    <CardDescription>{batch.variety}</CardDescription>
-                  )}
+      {/* Scheduling Dialog */}
+      <Dialog open={schedulingOpen} onOpenChange={setSchedulingOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Schedule Inspection</DialogTitle>
+            <DialogDescription>
+              Schedule an inspection for {selectedBatch?.product_type} batch
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Inspection Type</Label>
+              <RadioGroup value={inspectionType} onValueChange={(value) => setInspectionType(value as "physical" | "virtual")}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="physical" id="physical" />
+                  <Label htmlFor="physical" className="font-normal cursor-pointer">
+                    Physical Inspection (On-site)
+                  </Label>
                 </div>
-                <Badge variant="outline">{batch.status}</Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2 text-sm">
-                <Package className="h-4 w-4 text-muted-foreground" />
-                <span className="font-semibold">{batch.quantity} {batch.weight_unit}</span>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="virtual" id="virtual" />
+                  <Label htmlFor="virtual" className="font-normal cursor-pointer">
+                    Virtual Inspection (Remote)
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
 
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  {batch.origin_state ? `${batch.origin_state}, ` : ""}
-                  {batch.origin_country}
-                </span>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="scheduled-date">Scheduled Date & Time</Label>
+              <Input
+                id="scheduled-date"
+                type="datetime-local"
+                value={scheduledDate}
+                onChange={(e) => setScheduledDate(e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+              />
+            </div>
 
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>Harvest: {format(new Date(batch.harvest_date), "PP")}</span>
-              </div>
+            <InspectorSelector 
+              value={selectedInspector} 
+              onChange={setSelectedInspector}
+            />
 
-              <div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
-                <Package className="h-4 w-4 text-primary" />
-                <span className="text-xs font-mono font-semibold text-primary">
-                  {batch.tracking_token}
-                </span>
+            {selectedBatch && (
+              <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
+                <p><strong>Batch:</strong> {selectedBatch.tracking_token}</p>
+                <p><strong>Product:</strong> {selectedBatch.product_type}</p>
+                <p><strong>Exporter:</strong> {selectedBatch.profiles?.organization_name}</p>
+                <p><strong>Location:</strong> {selectedBatch.origin_country}</p>
               </div>
+            )}
+          </div>
 
-              <div className="text-xs text-muted-foreground">
-                Submitted {format(new Date(batch.created_at), "PPp")}
-              </div>
-
-              <Button 
-                className="w-full" 
-                onClick={() => handleClaimInspection(batch.id, batch.exporter_id)}
-                disabled={claiming === batch.id}
-              >
-                {claiming === batch.id ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Claiming...
-                  </>
-                ) : (
-                  <>
-                    <ClipboardCheck className="h-4 w-4 mr-2" />
-                    Claim for Inspection
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSchedulingOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleScheduleInspection} disabled={!scheduledDate || claiming !== null}>
+              {claiming ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Scheduling...
+                </>
+              ) : (
+                "Confirm Schedule"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

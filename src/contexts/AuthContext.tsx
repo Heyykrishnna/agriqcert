@@ -10,10 +10,12 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: UserRole | null;
+  userRoles: UserRole[];
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: UserRole) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  hasRole: (role: UserRole) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
+  const [userRoles, setUserRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -38,16 +41,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
+        .eq("user_id", userId);
 
       if (error) throw error;
-      setUserRole(data?.role || null);
-      return data?.role;
+      
+      const roles = data?.map(r => r.role) || [];
+      setUserRoles(roles);
+      
+      // Set primary role with priority: admin > qa_agency > importer > exporter
+      const primaryRole = roles.includes("admin") ? "admin" :
+                         roles.includes("qa_agency") ? "qa_agency" :
+                         roles.includes("importer") ? "importer" :
+                         roles.includes("exporter") ? "exporter" : null;
+      
+      setUserRole(primaryRole);
+      return primaryRole;
     } catch (error) {
       console.error("Error fetching user role:", error);
       return null;
     }
+  };
+
+  const hasRole = (role: UserRole) => {
+    return userRoles.includes(role);
   };
 
   useEffect(() => {
@@ -64,6 +80,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }, 0);
         } else {
           setUserRole(null);
+          setUserRoles([]);
+          
+          // Handle session expiration or logout
+          if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+            // Only redirect if we're not already on public pages
+            const publicPaths = ['/', '/auth', '/verify-portal', '/track'];
+            const currentPath = window.location.pathname;
+            
+            if (!publicPaths.some(path => currentPath.startsWith(path))) {
+              toast.error("Session expired. Please sign in again.");
+              navigate("/auth");
+            }
+          }
         }
       }
     );
@@ -83,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const signUp = async (email: string, password: string, fullName: string, role: UserRole) => {
     try {
@@ -174,10 +203,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         session,
         userRole,
+        userRoles,
         loading,
         signUp,
         signIn,
         signOut,
+        hasRole,
       }}
     >
       {children}

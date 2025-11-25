@@ -8,6 +8,7 @@ import { ClipboardCheck, Package, Award, CircleChevronLeft } from "lucide-react"
 import { BatchInspectionQueue } from "@/components/BatchInspectionQueue";
 import { AssignedInspections } from "@/components/AssignedInspections";
 import { DashboardProfileMenu } from "@/components/DashboardProfileMenu";
+import { InspectorManagement } from "@/components/InspectorManagement";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
@@ -101,9 +102,10 @@ const QADashboard = () => {
 
         {/* Tabs for Batch Management */}
         <Tabs defaultValue="queue" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
-            <TabsTrigger value="queue">Inspection Queue</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 max-w-2xl">
+            <TabsTrigger value="queue">Inspection Requests</TabsTrigger>
             <TabsTrigger value="assigned">{t('My Inspections')}</TabsTrigger>
+            <TabsTrigger value="inspectors">Inspectors</TabsTrigger>
           </TabsList>
 
           <TabsContent value="queue" className="mt-6">
@@ -112,6 +114,11 @@ const QADashboard = () => {
 
           <TabsContent value="assigned" className="mt-6">
             <AssignedInspections />
+          </TabsContent>
+
+
+          <TabsContent value="inspectors" className="mt-6">
+            <InspectorManagement />
           </TabsContent>
         </Tabs>
       </main>
