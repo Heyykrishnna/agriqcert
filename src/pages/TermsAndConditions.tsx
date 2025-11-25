@@ -104,7 +104,7 @@ const TermsAndConditions = () => {
       <FloatingParticles />
       <div className="relative z-10">
         <Navbar />
-        
+
         {/* Hero Section */}
         <section className="relative pt-32 pb-20 px-6">
           <div className="container mx-auto max-w-6xl">
@@ -119,7 +119,7 @@ const TermsAndConditions = () => {
                 Please read these terms carefully before using the AgroTrace platform
               </p>
               <p className="text-sm text-muted-foreground mt-4">
-                Last Updated: November 25, 2025
+                Last Updated: November, 2025
               </p>
             </div>
 
