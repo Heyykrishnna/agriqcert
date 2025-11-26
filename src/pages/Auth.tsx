@@ -316,19 +316,19 @@ const Auth = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-[#0f1419] border-gray-800 rounded-xl">
-                          <SelectItem value="exporter" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
+                          <SelectItem value="exporter" className="focus:text-white text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
                               <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>Exporter</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="qa_agency" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
+                          <SelectItem value="qa_agency" className="text-white focus:text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
                               <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>QA Agency</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="importer" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
+                          <SelectItem value="importer" className="text-white focus:text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
                               <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>Importer/Customs</span>
