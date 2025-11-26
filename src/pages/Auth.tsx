@@ -10,14 +10,16 @@ import { Leaf, Shield, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import gsap from "gsap";
 import FloatingParticles from "@/components/FloatingParticles";
+import { Separator } from "@/components/ui/separator";
 
 type UserRole = "exporter" | "qa_agency" | "importer" | "admin";
 
 const Auth = () => {
-  const { signIn, signUp, user, userRole } = useAuth();
+  const { signIn, signUp, signInWithGoogle, user, userRole } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -102,50 +104,73 @@ const Auth = () => {
     }
   };
 
+
+  const handleGoogleSignIn = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (err: any) {
+      setError(err.message || "Failed to sign in with Google");
+      setLoading(false);
+    }
+  };
+
+
+
   return (
-    <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0A0F1C] via-[#1a1f35] to-[#0A0F1C] p-6 relative overflow-hidden">
+    <div ref={containerRef} className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#0f1419] to-[#0a0a0a] p-6 relative overflow-hidden">
       <FloatingParticles />
 
+      {/* Ambient glow effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#10b981]/10 rounded-full blur-[120px] animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-[120px] animate-pulse delay-1000"></div>
+
       <div className="w-full max-w-md relative z-10">
-        <div ref={logoRef} className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-3 mb-4 group">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#10b981] to-[#059669] shadow-lg shadow-[#10b981]/20 group-hover:shadow-[#10b981]/40 transition-all duration-300 group-hover:scale-110">
-              <img src="/AGROTRACELOGO.png" className="rounded-2xl" />
+        {/* Minimal Logo Section */}
+        <div ref={logoRef} className="text-center mb-12">
+          <Link to="/" className="inline-flex items-center justify-center mb-6 group">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#10b981] to-[#059669] shadow-lg shadow-[#10b981]/30 group-hover:shadow-[#10b981]/50 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <img src="/AGROTRACELOGO.png" className="rounded-xl" />
             </div>
-            <span className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              AgroTrace
-            </span>
           </Link>
-          <p className="text-gray-400 text-lg">Digital certification for agricultural excellence</p>
+          <h1 className="text-2xl font-semibold text-white mb-2">Welcome back</h1>
+          <p className="text-gray-500 text-sm">Sign in to continue to AgroTrace</p>
         </div>
 
+        {/* Auth Card */}
         <div ref={cardRef}>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#1a1f35] border border-gray-700">
-              <TabsTrigger value="signin" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#10b981] data-[state=active]:to-[#059669]">
+          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "signin" | "signup")} className="w-full">
+            {/* Minimal Tab Selector */}
+            <TabsList className="grid w-full grid-cols-2 bg-transparent border-b border-gray-800 rounded-none mb-8 p-0">
+              <TabsTrigger
+                value="signin"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#10b981] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-500 pb-3 transition-all duration-300"
+              >
                 Sign In
               </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#10b981] data-[state=active]:to-[#059669]">
+              <TabsTrigger
+                value="signup"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-[#10b981] data-[state=active]:bg-transparent data-[state=active]:text-white text-gray-500 pb-3 transition-all duration-300"
+              >
                 Sign Up
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin">
-              <Card className="bg-[#1a1f35]/80 backdrop-blur-xl border-gray-700 shadow-2xl">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-white">Welcome Back</CardTitle>
-                  <CardDescription className="text-gray-400">Sign in to your account to continue</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSignIn} className="space-y-4">
+            {/* Sign In Form */}
+            <TabsContent value="signin" className="mt-0">
+              <Card className="bg-[#0f1419]/60 backdrop-blur-2xl border border-gray-800/50 shadow-2xl rounded-2xl overflow-hidden">
+                <CardContent className="pt-8 pb-8 px-8">
+                  <form onSubmit={handleSignIn} className="space-y-5">
                     {error && (
-                      <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-                        <AlertCircle className="h-4 w-4" />
+                      <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 p-3 rounded-xl border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         <span>{error}</span>
                       </div>
                     )}
+
                     <div className="space-y-2">
-                      <Label htmlFor="signin-email" className="text-gray-300">Email</Label>
+                      <Label htmlFor="signin-email" className="text-gray-400 text-sm font-normal">E-mail</Label>
                       <Input
                         id="signin-email"
                         type="email"
@@ -153,48 +178,99 @@ const Auth = () => {
                         value={signInEmail}
                         onChange={(e) => setSignInEmail(e.target.value)}
                         required
-                        className="bg-[#0A0F1C] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#10b981]"
+                        className="bg-[#0a0a0a]/80 border-gray-800 text-white placeholder:text-gray-600 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 h-12 rounded-xl transition-all duration-300"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="signin-password" className="text-gray-300">Password</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="signin-password" className="text-gray-400 text-sm font-normal">Password</Label>
+                      </div>
                       <Input
                         id="signin-password"
                         type="password"
+                        placeholder="••••••••"
                         value={signInPassword}
                         onChange={(e) => setSignInPassword(e.target.value)}
                         required
-                        className="bg-[#0A0F1C] border-gray-700 text-white focus:border-[#10b981]"
+                        className="bg-[#0a0a0a]/80 border-gray-800 text-white placeholder:text-gray-600 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 h-12 rounded-xl transition-all duration-300"
                       />
                     </div>
+
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300"
+                      className="w-full bg-white hover:bg-gray-100 text-black font-medium h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
                       disabled={loading}
                     >
-                      {loading ? "Signing in..." : "Sign In"}
+                      {loading ? "Signing in..." : "Sign in"}
                     </Button>
+
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <Separator className="w-full bg-gray-800" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-[#0f1419] px-3 text-gray-500">Or continue with</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGoogleSignIn}
+                      disabled={loading}
+                      className="w-full bg-[#0a0a0a]/80 hover:bg-[#0a0a0a] hover:text-white text-white border border-gray-800 font-medium h-12 rounded-xl transition-all duration-300 hover:border-gray-700"
+                    >
+                      <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+                        <path
+                          fill="#4285F4"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="#34A853"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="#FBBC05"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        />
+                        <path
+                          fill="#EA4335"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        />
+                      </svg>
+                      Sign in with Google
+                    </Button>
+
+                    <div className="text-center text-sm text-gray-500 mt-4">
+                      Don't have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("signup")}
+                        className="text-[#10b981] hover:text-[#059669] font-medium transition-colors duration-300"
+                      >
+                        Sign up
+                      </button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="signup">
-              <Card className="bg-[#1a1f35]/80 backdrop-blur-xl border-gray-700 shadow-2xl">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-white">Create Account</CardTitle>
-                  <CardDescription className="text-gray-400">Get started with AgroTrace</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSignUp} className="space-y-4">
+            {/* Sign Up Form */}
+            <TabsContent value="signup" className="mt-0">
+              <Card className="bg-[#0f1419]/60 backdrop-blur-2xl border border-gray-800/50 shadow-2xl rounded-2xl overflow-hidden">
+                <CardContent className="pt-8 pb-8 px-8">
+                  <form onSubmit={handleSignUp} className="space-y-5">
                     {error && (
-                      <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-                        <AlertCircle className="h-4 w-4" />
+                      <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 p-3 rounded-xl border border-red-500/20 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
                         <span>{error}</span>
                       </div>
                     )}
+
                     <div className="space-y-2">
-                      <Label htmlFor="fullname" className="text-gray-300">Full Name</Label>
+                      <Label htmlFor="fullname" className="text-gray-400 text-sm font-normal">Full Name</Label>
                       <Input
                         id="fullname"
                         type="text"
@@ -202,11 +278,12 @@ const Auth = () => {
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
                         required
-                        className="bg-[#0A0F1C] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#10b981]"
+                        className="bg-[#0a0a0a]/80 border-gray-800 text-white placeholder:text-gray-600 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 h-12 rounded-xl transition-all duration-300"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email" className="text-gray-300">Email</Label>
+                      <Label htmlFor="signup-email" className="text-gray-400 text-sm font-normal">E-mail</Label>
                       <Input
                         id="signup-email"
                         type="email"
@@ -214,65 +291,83 @@ const Auth = () => {
                         value={signUpEmail}
                         onChange={(e) => setSignUpEmail(e.target.value)}
                         required
-                        className="bg-[#0A0F1C] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#10b981]"
+                        className="bg-[#0a0a0a]/80 border-gray-800 text-white placeholder:text-gray-600 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 h-12 rounded-xl transition-all duration-300"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="signup-password" className="text-gray-300">Password</Label>
+                      <Label htmlFor="signup-password" className="text-gray-400 text-sm font-normal">Password</Label>
                       <Input
                         id="signup-password"
                         type="password"
+                        placeholder="At least 6 characters"
                         value={signUpPassword}
                         onChange={(e) => setSignUpPassword(e.target.value)}
                         required
                         minLength={6}
-                        placeholder="At least 6 characters"
-                        className="bg-[#0A0F1C] border-gray-700 text-white placeholder:text-gray-500 focus:border-[#10b981]"
+                        className="bg-[#0a0a0a]/80 border-gray-800 text-white placeholder:text-gray-600 focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 h-12 rounded-xl transition-all duration-300"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <Label htmlFor="role" className="text-gray-300">Account Type</Label>
+                      <Label htmlFor="role" className="text-gray-400 text-sm font-normal">Account Type</Label>
                       <Select value={role} onValueChange={(value) => setRole(value as UserRole)}>
-                        <SelectTrigger id="role" className="bg-[#0A0F1C] border-gray-700 text-white">
+                        <SelectTrigger id="role" className="bg-[#0a0a0a]/80 border-gray-800 text-white h-12 rounded-xl focus:border-[#10b981] focus:ring-1 focus:ring-[#10b981]/50 transition-all duration-300">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#1a1f35] border-gray-700">
-                          <SelectItem value="exporter" className="text-white hover:bg-[#10b981]/20">
+                        <SelectContent className="bg-[#0f1419] border-gray-800 rounded-xl">
+                          <SelectItem value="exporter" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
-                              <Shield className="h-4 w-4" />
+                              <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>Exporter</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="qa_agency" className="text-white hover:bg-[#10b981]/20">
+                          <SelectItem value="qa_agency" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
-                              <Shield className="h-4 w-4" />
+                              <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>QA Agency</span>
                             </div>
                           </SelectItem>
-                          <SelectItem value="importer" className="text-white hover:bg-[#10b981]/20">
+                          <SelectItem value="importer" className="text-white hover:bg-[#10b981]/20 focus:bg-[#10b981]/20 rounded-lg">
                             <div className="flex items-center gap-2">
-                              <Shield className="h-4 w-4" />
+                              <Shield className="h-4 w-4 text-[#10b981]" />
                               <span>Importer/Customs</span>
                             </div>
                           </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
+
                     <Button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-[#10b981] to-[#059669] hover:from-[#059669] hover:to-[#047857] text-white shadow-lg shadow-[#10b981]/20 transition-all duration-300"
+                      className="w-full bg-white hover:bg-gray-100 text-black font-medium h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 mt-6"
                       disabled={loading}
                     >
                       {loading ? "Creating account..." : "Create Account"}
                     </Button>
+
+                    <div className="text-center text-sm text-gray-500 mt-4">
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("signin")}
+                        className="text-[#10b981] hover:text-[#059669] font-medium transition-colors duration-300"
+                      >
+                        Sign in
+                      </button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            By continuing, you agree to our <a href="/terms" className="text-[#10b981] font-semibold"> Terms of Service</a> and <a href="/privacy" className="text-[#10b981] font-semibold">Privacy Policy</a>
+          {/* Footer Text */}
+          <p className="text-center text-xs text-gray-600 mt-8">
+            By continuing, you agree to our{" "}
+            <a href="/terms" className="text-gray-500 hover:text-[#10b981] transition-colors duration-300">Terms of Service</a>
+            {" "}and{" "}
+            <a href="/privacy" className="text-gray-500 hover:text-[#10b981] transition-colors duration-300">Privacy Policy</a>
           </p>
         </div>
       </div>

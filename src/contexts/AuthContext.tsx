@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: UserRole) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   hasRole: (role: UserRole) => boolean;
 }
@@ -44,16 +45,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq("user_id", userId);
 
       if (error) throw error;
-      
+
       const roles = data?.map(r => r.role) || [];
       setUserRoles(roles);
-      
+
       // Set primary role with priority: admin > qa_agency > importer > exporter
       const primaryRole = roles.includes("admin") ? "admin" :
-                         roles.includes("qa_agency") ? "qa_agency" :
-                         roles.includes("importer") ? "importer" :
-                         roles.includes("exporter") ? "exporter" : null;
-      
+        roles.includes("qa_agency") ? "qa_agency" :
+          roles.includes("importer") ? "importer" :
+            roles.includes("exporter") ? "exporter" : null;
+
       setUserRole(primaryRole);
       return primaryRole;
     } catch (error) {
@@ -67,51 +68,60 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    let mounted = true;
 
-        if (session?.user) {
-          // Fetch role after state update
-          setTimeout(() => {
-            fetchUserRole(session.user.id);
-          }, 0);
-        } else {
-          setUserRole(null);
-          setUserRoles([]);
-          
-          // Handle session expiration or logout
-          if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
-            // Only redirect if we're not already on public pages
-            const publicPaths = ['/', '/auth', '/verify-portal', '/track'];
-            const currentPath = window.location.pathname;
-            
-            if (!publicPaths.some(path => currentPath.startsWith(path))) {
-              toast.error("Session expired. Please sign in again.");
-              navigate("/auth");
-            }
-          }
-        }
-      }
-    );
-
-    // Check for existing session
+    // Check for existing session FIRST
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
         fetchUserRole(session.user.id).then(() => {
-          setLoading(false);
+          if (mounted) setLoading(false);
         });
       } else {
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    // THEN set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!mounted) return;
+
+        console.log('Auth state changed:', event, session);
+
+        // Handle explicit sign out - don't restore session
+        if (event === 'SIGNED_OUT') {
+          setSession(null);
+          setUser(null);
+          setUserRole(null);
+          setUserRoles([]);
+          return;
+        }
+
+        // Handle other events
+        setSession(session);
+        setUser(session?.user ?? null);
+
+        if (session?.user) {
+          // Fetch role after state update
+          setTimeout(() => {
+            if (mounted) fetchUserRole(session.user.id);
+          }, 0);
+        } else {
+          setUserRole(null);
+          setUserRoles([]);
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const signUp = async (email: string, password: string, fullName: string, role: UserRole) => {
@@ -120,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
         options: {
-          data: { 
+          data: {
             full_name: fullName,
             role: role // Pass role in metadata for trigger to handle
           },
@@ -132,10 +142,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (data.user) {
         toast.success("Account created successfully! Please sign in.");
-        
+
         // Wait a bit for the trigger to complete
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // Redirect to auth page for sign in
         navigate("/auth");
       }
@@ -158,22 +168,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.user) {
         // Wait a bit to ensure role is loaded
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         const role = await fetchUserRole(data.user.id);
-        
+
         if (!role) {
           toast.error("User role not found. Please contact support.");
           return;
         }
-        
+
         toast.success("Signed in successfully!");
-        
-        // Navigate based on role
-        if (role === "exporter") navigate("/exporter");
-        else if (role === "qa_agency") navigate("/qa");
-        else if (role === "importer") navigate("/importer");
-        else if (role === "admin") navigate("/admin");
-        else navigate("/");
+
+        // Redirect to deployed app
+        window.location.href = "https://agrotrace-peach.vercel.app/";
       }
     } catch (error: any) {
       console.error("Sign in error:", error);
@@ -182,18 +188,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://agrotrace-peach.vercel.app/',
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Google sign in error:", error);
+      toast.error(error.message || "Failed to sign in with Google");
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      
+      // Sign out globally to clear all sessions
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (error: any) {
+      // Ignore session-not-found errors
+      console.log("Sign out:", error?.message || "Cleared locally");
+    } finally {
+      // Always clear local state
       setUser(null);
       setSession(null);
       setUserRole(null);
+      setUserRoles([]);
+
       toast.success("Signed out successfully");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to sign out");
     }
   };
 
@@ -207,6 +234,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loading,
         signUp,
         signIn,
+        signInWithGoogle,
         signOut,
         hasRole,
       }}
