@@ -55,7 +55,7 @@ const Features = () => {
             {t('features.subtitle')}
           </h2>
         </div>
-        
+
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/70"></div>
@@ -67,7 +67,7 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed font-medium">{t('features.w3cDesc')}</p>
             </CardContent>
           </Card>
-          
+
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary/70"></div>
             <CardContent className="pt-8 pb-6 px-6">
@@ -78,7 +78,7 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed font-medium">{t('features.blockchainDesc')}</p>
             </CardContent>
           </Card>
-          
+
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-accent/70"></div>
             <CardContent className="pt-8 pb-6 px-6">
@@ -89,7 +89,7 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed font-medium">{t('features.qrDesc')}</p>
             </CardContent>
           </Card>
-          
+
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
             <CardContent className="pt-8 pb-6 px-6">
@@ -100,7 +100,7 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed font-medium">{t('features.multiStakeholderDesc')}</p>
             </CardContent>
           </Card>
-          
+
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-accent"></div>
             <CardContent className="pt-8 pb-6 px-6">
@@ -111,7 +111,7 @@ const Features = () => {
               <p className="text-muted-foreground leading-relaxed font-medium">{t('features.digitalWalletDesc')}</p>
             </CardContent>
           </Card>
-          
+
           <Card className="group border-2 bg-card shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-primary"></div>
             <CardContent className="pt-8 pb-6 px-6">

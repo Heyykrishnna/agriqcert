@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 const HowItWorks = () => {
   const { t } = useTranslation();
-  
+
   const steps = [
     {
       icon: Upload,
@@ -45,11 +45,11 @@ const HowItWorks = () => {
             {t('howItWorks.subtitle')}
           </p>
         </div>
-        
+
         <div className="relative">
           {/* Connection line */}
           <div className="absolute left-10 top-16 bottom-24 w-1 bg-gradient-to-b from-primary via-secondary to-accent rounded-full hidden lg:block shadow-lg"></div>
-          
+
           <div className="space-y-16">
             {steps.map((step, index) => {
               const Icon = step.icon;
@@ -63,7 +63,7 @@ const HowItWorks = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex-grow space-y-3 bg-card/50 backdrop-blur-sm p-8 rounded-2xl border-2 border-primary/10 shadow-lg hover:shadow-xl transition-all hover:border-primary/30">
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-bold text-primary px-3 py-1 bg-primary/10 rounded-full">Step {index + 1}</span>
