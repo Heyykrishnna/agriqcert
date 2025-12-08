@@ -453,7 +453,7 @@ const PublicBatchTracker = () => {
             <Button asChild variant="outline" className="mt-4">
               <Link to="/">
                 <Home className="mr-2 h-4 w-4" />
-                Visit Homepage
+                Main Website
               </Link>
             </Button>
           </CardContent>

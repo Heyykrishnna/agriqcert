@@ -127,11 +127,6 @@ const MobileScanner = () => {
           <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             AgroTrace Scanner
           </h1>
-          <Link to="/">
-            <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]">
-              <Home className="h-5 w-5" />
-            </Button>
-          </Link>
         </div>
       </div>
 
